@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Get Pixel Color</title>
+  </head>
+  <body>
+    <input type="file" id="upload" />
+    <canvas id="canvas" style="display: none"></canvas>
+    <p id="color"></p>
+
+    <script>
+      document
+        .getElementById("upload")
+        .addEventListener("change", function (event) {
+          const file = event.target.files[0];
+          const img = new Image();
+          const canvas = document.getElementById("canvas");
+          const ctx = canvas.getContext("2d");
+
+          img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            canvas.addEventListener("click", function (e) {
+              const rect = canvas.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const y = e.clientY - rect.top;
+              const imgData = ctx.getImageData(x, y, 1, 1).data;
+              const rgba = `rgba(${imgData[0]},${imgData[1]},${imgData[2]},${
+                imgData[3] / 255
+              })`;
+              document.getElementById("color").textContent = `Color: ${rgba}`;
+            });
+          };
+
+          if (file) {
+            img.src = URL.createObjectURL(file);
+            canvas.style.display = "block";
+          }
+        });
+    </script>
+  </body>
+</html>
